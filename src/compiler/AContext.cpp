@@ -53,7 +53,7 @@ namespace sheet {
 				auto voicingStratgy = ctx->currentVoicingStrategy();
 				auto pitches = voicingStratgy->get(*chord, *chordDef, ev->pitches, ctx->getTimeInfo());
 
-				ctx->addEvent(pitches, ev->duration, true);
+				ctx->addEvent(pitches, ev->duration);
 
 				return true;
 			}
@@ -93,7 +93,7 @@ namespace sheet {
 				return true;
 			}
 			template<>
-			bool renderEvent<Event::Ignore>(AContext * ctx, const Event *ev)
+			bool renderEvent<Event::IgnoreAfterTying>(AContext *, const Event *)
 			{
 				return true;
 			}			
@@ -269,24 +269,12 @@ namespace sheet {
 			return *result;
 		}
 
-		void AContext::addEvent(const PitchDef &rawPitch, fm::Ticks duration, bool tying)
+		void AContext::addEvent(const PitchDef &rawPitch, fm::Ticks duration)
 		{
 			using namespace fm;
 			PitchDef pitch = resolvePitch(rawPitch);
 			auto meta = voiceMetaData();
-			if (tying) {
-				auto alreadyTying = meta->waitForTieBuffer.find(pitch) != meta->waitForTieBuffer.end();
-				return;
-			}
-			if (meta->pendingTie()) {
-				auto it = meta->waitForTieBuffer.find(pitch);
-			}
 			addEvent(pitch, meta->position, duration);
-		}
-
-		void AContext::stopTying()
-		{
-
 		}
 
 		void AContext::startEvent(const PitchDef &pitch, fm::Ticks absolutePosition)
@@ -319,7 +307,7 @@ namespace sheet {
 			}
 		}
 
-		void AContext::addEvent(const Event::Pitches &pitches, fm::Ticks duration, bool tying)
+		void AContext::addEvent(const Event::Pitches &pitches, fm::Ticks duration)
 		{
 			auto meta = voiceMetaData();
 			auto tmpExpression = meta->expression;
@@ -337,7 +325,7 @@ namespace sheet {
 			}			
 			meta->modificationsOnce.clear();
 			auto sanweis = spielanweisung();
-			sanweis->addEvent(this, pitches, duration, tying);
+			sanweis->addEvent(this, pitches, duration);
 			meta->expression = tmpExpression;
 		}
 

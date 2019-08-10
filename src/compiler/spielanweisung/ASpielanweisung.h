@@ -12,7 +12,7 @@ namespace sheet {
             ASpielanweisung() = default;
         public:
             virtual ~ASpielanweisung() = default;
-            virtual void addEvent(AContext *ctx, const Event::Pitches &pitches, fm::Ticks duration, bool tying = false) = 0;
+            virtual void addEvent(AContext *ctx, const Event::Pitches &pitches, fm::Ticks duration) = 0;
             virtual void setArguments(const Event::Args &args) {}
         };
     }

@@ -6,7 +6,7 @@
 namespace sheet {
     namespace compiler {
 
-        void Arpeggio::addEvent(AContext *ctx, const Event::Pitches &pitches, fm::Ticks duration, bool tying)
+        void Arpeggio::addEvent(AContext *ctx, const Event::Pitches &pitches, fm::Ticks duration)
         {
 			if (pitches.empty()) {
 				return;
@@ -23,7 +23,7 @@ namespace sheet {
 			auto arpduration = duration / pitches.size();
 			for (const auto &pitch : pitchesCopy)
 			{
-				ctx->addEvent(pitch, duration, tying);
+				ctx->addEvent(pitch, duration);
 				ctx->seek(arpduration);
 			}
 			auto roundingError = duration - (arpduration * pitches.size());

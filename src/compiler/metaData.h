@@ -26,7 +26,6 @@ namespace sheet {
             typedef std::set<PitchDef> PitchDefSet;
             static const fm::Ticks DefaultDuration;
 			static const fm::Ticks DefaultBarLength;
-            typedef std::map<PitchDef, fm::Ticks> WaitForTieBuffer;
             typedef std::list<ASpielanweisungPtr> Spielanweisungen;
             typedef std::list<AModificationPtr> Modifications;
             fm::Ticks position = 0;
@@ -43,7 +42,6 @@ namespace sheet {
             bool isUpbeat = false;
             fm::Expression expression = fm::expression::FF;
             fm::Expression singleExpression = fm::expression::Default;
-            WaitForTieBuffer waitForTieBuffer;
             /*
                 used for continue sheetTemplate track rendering after chord change
             */
@@ -54,7 +52,6 @@ namespace sheet {
             fm::Ticks remainingTime = 0;
             VoicingStrategyPtr voicingStrategy = nullptr;
             virtual ~VoiceMetaData() = default;
-            bool pendingTie() const { return !waitForTieBuffer.empty(); }
             ASpielanweisungPtr spielanweisung;
             ASpielanweisungPtr spielanweisungOnce; // played once
             Modifications modifications;

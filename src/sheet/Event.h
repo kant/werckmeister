@@ -64,8 +64,8 @@ namespace sheet {
 			EOB, // End of Bar aka. Bar Line
 			Meta,
 			Expression,
-			NumEvents,
-			Ignore
+			IgnoreAfterTying,
+			NumEvents
 		};
 		typedef fm::Ticks Duration;
 		typedef std::set<PitchDef> Pitches;

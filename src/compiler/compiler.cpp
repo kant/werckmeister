@@ -105,15 +105,14 @@ namespace sheet {
 					}
 					ev.duration += it->duration;
 					if (it->type != Event::TiedNote) {
-						it->type = Event::Ignore;
+						it->type = Event::IgnoreAfterTying;
 						break;
 					}
-					it->type = Event::Ignore;
+					it->type = Event::IgnoreAfterTying;
 				}
 				ev.type = Event::Note;
 				ctx->addEvent(ev);
 			}
-
 		}
 
 		void Compiler::renderTracks()
@@ -143,7 +142,7 @@ namespace sheet {
 					for (; it!=end; ++it)
 					{
 						auto &ev = *it;
-						if (ev.isTimeConsuming()) {
+						if (ev.isTimeConsuming() || ev.type == Event::IgnoreAfterTying) {
 							if (ev.duration == 0) {
 								ev.duration = lastDuration;
 							} else {
