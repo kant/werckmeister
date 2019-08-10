@@ -33,7 +33,6 @@ namespace sheet {
             /**
              * last note duration
              */
-            fm::Ticks lastEventDuration = DefaultDuration; 
             fm::Ticks barLength = DefaultBarLength;
             int signatureNumerator = 4;
             int signatureDenominator = 4;

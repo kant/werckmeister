@@ -62,7 +62,6 @@ namespace sheet {
 			bool renderEvent<Event::TiedNote>(AContext * ctx, const Event *ev)
 			{
 
-				ctx->addEvent(ev->pitches, ev->duration, true);
 				return true;
 			}
 
@@ -93,6 +92,11 @@ namespace sheet {
 				ctx->setMeta(*ev);
 				return true;
 			}
+			template<>
+			bool renderEvent<Event::Ignore>(AContext * ctx, const Event *ev)
+			{
+				return true;
+			}			
 			//////////////////////////////////////////////////
 			template <int EventId>
 			bool renderEventUnrolled(AContext * ctx, const Event *ev)
@@ -265,48 +269,24 @@ namespace sheet {
 			return *result;
 		}
 
-		fm::Ticks AContext::getImlplicitDuration(const Event &ev) const
-		{
-			if (ev.duration > 0) {
-				return ev.duration;
-			}
-			auto meta = voiceMetaData();
-			return meta->lastEventDuration;
-		}
-
 		void AContext::addEvent(const PitchDef &rawPitch, fm::Ticks duration, bool tying)
 		{
 			using namespace fm;
 			PitchDef pitch = resolvePitch(rawPitch);
 			auto meta = voiceMetaData();
-			if (duration > 0) {
-				meta->lastEventDuration = duration;
-			}
 			if (tying) {
 				auto alreadyTying = meta->waitForTieBuffer.find(pitch) != meta->waitForTieBuffer.end();
-				if (!alreadyTying) {
-					meta->waitForTieBuffer.insert({ pitch, meta->lastEventDuration });
-					startEvent(pitch, meta->position);
-				}
 				return;
 			}
 			if (meta->pendingTie()) {
 				auto it = meta->waitForTieBuffer.find(pitch);
-				if (it != meta->waitForTieBuffer.end()) {
-					stopEvent(pitch, meta->position + meta->lastEventDuration);
-					meta->waitForTieBuffer.erase(it);
-					return;
-				}
 			}
-			addEvent(pitch, meta->position, meta->lastEventDuration);
+			addEvent(pitch, meta->position, duration);
 		}
 
 		void AContext::stopTying()
 		{
-			auto meta = voiceMetaData();
-			for(auto tied : meta->startedEvents){
-				stopEvent(tied, meta->position + meta->lastEventDuration);
-			}
+
 		}
 
 		void AContext::startEvent(const PitchDef &pitch, fm::Ticks absolutePosition)
@@ -348,9 +328,6 @@ namespace sheet {
 				tmpExpression = meta->expression;
 				meta->expression = meta->singleExpression;
 				meta->singleExpression = fm::expression::Default;
-			}
-			if (duration == 0) {
-				duration = meta->lastEventDuration;
 			}
 			for (auto mod : meta->modifications) {
 				mod->addModificationEvents(this, meta->position, duration);
@@ -394,11 +371,6 @@ namespace sheet {
 				meta->isUpbeat = false;
 				meta->eventOffset = meta->eventCount;
 			}
-			else if (!fm::compareTolerant(meta->barPosition, meta->barLength, fm::Ticks(TickTolerance))) {
-				auto errorInQuaters = -(meta->barLength - meta->barPosition) / fm::PPQ;
-				warn("bar check error (" + std::to_string( errorInQuaters )+ ")");
-				seek(-(meta->barPosition - meta->barLength));
-			}
 			meta->barPosition = 0;
 			++(meta->barCount);
 		}
@@ -406,10 +378,7 @@ namespace sheet {
 		void AContext::rest(fm::Ticks duration)
 		{
 			auto meta = voiceMetaData();
-			if (duration != 0) {
-				meta->lastEventDuration = duration;
-			}
-			seek(meta->lastEventDuration);
+			seek(duration);
 		}
 		void AContext::processMeta(const fm::String &command, const std::vector<fm::String> &args)
 		{

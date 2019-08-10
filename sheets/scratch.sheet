@@ -8,7 +8,7 @@ device: SC1 midi 1;
 tempo: 120;
 instrumentDef: piano   SC1 3 0 0;
 instrumentDef: bass    SC1 4 0 16;
-instrumentDef: guitar    SC1 4 0 27;
+instrumentDef: organ    SC1 4 0 16;
 
 instrumentConf: piano 
     volume 100
@@ -18,22 +18,18 @@ instrumentConf: piano
 
 
 [
-type: template;
-name: myTemplate;
-instrument: piano;  
+instrument: organ;
 {
-    /doOnce: arpeggio/
-    <I II III IV V VI VII>1
-}   
-] 
+    c~ c e f~ | f a b c'~ | c' d e f~ | f~ f~ f~ f |
+}
+]
 
-[ 
-type: sheet;
+[
+instrument: piano;
 {
-    Bes/5 | C/4 |
-    C-/7
-}      
-] 
+    c, c, c, c, | c, c, c, c, | c, c, c, c, | c, c, c, c, |
+}
+]
 
 
 
