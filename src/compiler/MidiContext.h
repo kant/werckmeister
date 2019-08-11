@@ -22,7 +22,7 @@ namespace sheet {
 			fm::midi::MidiPtr midi() const { return midi_; }
 			virtual TrackId createTrackImpl() override;
 			virtual VoiceId createVoiceImpl() override;
-			virtual void addNote(const NoteEvent &note, fm::Ticks absolutePosition) override;
+			virtual void addNote(const NoteEvent &note) override;
 			virtual void addEvent(const fm::midi::Event &ev, TrackId trackId = INVALID_TRACK_ID);
 			virtual void addPitchbendEvent(double value, fm::Ticks absolutePosition) override;
 			virtual void metaSetChannel(int channel);

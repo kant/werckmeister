@@ -15,6 +15,7 @@ namespace sheet {
 			fm::Pitch pitch = 0;
 			PitchDef::Octave octave = 0;
 			fm::Ticks duration = 0;
+			fm::Ticks absPosition = 0;
 		};
     }
 }

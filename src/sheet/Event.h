@@ -80,6 +80,7 @@ namespace sheet {
 		Pitches pitches;
 		Type type = Unknown;
 		Duration duration = NoDuration;
+		fm::Ticks offset = 0;
 		/**
 		 *  can be for instance a meta event command or a chordname
 		 */

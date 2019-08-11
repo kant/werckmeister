@@ -28,7 +28,7 @@ namespace sheet {
 			template<>
 			bool renderEvent<Event::Note>(AContext * ctx, const Event *ev)
 			{
-				ctx->renderPitches(ev->pitches, ev->duration);
+				ctx->renderEvent(*ev);
 				return true;
 			}
 
@@ -39,8 +39,9 @@ namespace sheet {
 				auto chord = ctx->currentChord();
 				auto voicingStratgy = ctx->currentVoicingStrategy();
 				auto pitches = voicingStratgy->get(*chord, *chordDef, ev->pitches, ctx->getTimeInfo());
-
-				ctx->renderPitches(pitches, ev->duration);
+				Event copy = *ev;
+				copy.pitches.swap(pitches);
+				ctx->renderEvent(copy);
 
 				return true;
 			}
@@ -53,7 +54,7 @@ namespace sheet {
 				auto voicingStratgy = ctx->currentVoicingStrategy();
 				auto pitches = voicingStratgy->get(*chord, *chordDef, ev->pitches, ctx->getTimeInfo());
 
-				ctx->renderPitches(pitches, ev->duration);
+				ctx->renderEvent(*ev);
 
 				return true;
 			}
@@ -269,14 +270,16 @@ namespace sheet {
 			return *result;
 		}
 
-		NoteEvent AContext::createNote(const PitchDef &rawPitch, fm::Ticks duration)
+		NoteEvent AContext::createNote(const PitchDef &rawPitch, fm::Ticks duration, fm::Ticks offset)
 		{
 			using namespace fm;
+			auto meta = voiceMetaData();
 			PitchDef pitch = resolvePitch(rawPitch);
 			NoteEvent result;
 			result.duration = duration;
 			result.pitch = pitch.pitch;
 			result.octave = pitch.octave;
+			result.absPosition = meta->position + offset;
 			return result;
 		}
 
@@ -298,7 +301,7 @@ namespace sheet {
 			}
 		}
 
-		void AContext::renderPitches(const Event::Pitches &pitches, fm::Ticks duration)
+		void AContext::renderEvent(const Event &ev)
 		{
 			auto meta = voiceMetaData();
 			auto tmpExpression = meta->expression;
@@ -309,14 +312,14 @@ namespace sheet {
 				meta->singleExpression = fm::expression::Default;
 			}
 			for (auto mod : meta->modifications) {
-				mod->addModificationEvents(this, meta->position, duration);
+				mod->addModificationEvents(this, meta->position, ev.duration);
 			}
 			for (auto mod : meta->modificationsOnce) {
-				mod->addModificationEvents(this, meta->position, duration);
+				mod->addModificationEvents(this, meta->position, ev.duration);
 			}			
 			meta->modificationsOnce.clear();
 			auto sanweis = spielanweisung();
-			sanweis->addEvent(this, pitches, duration);
+			sanweis->addEvent(this, ev);
 			meta->expression = tmpExpression;
 		}
 

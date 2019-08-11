@@ -4,15 +4,15 @@
 namespace sheet {
     namespace compiler {
 
-        void Normal::addEvent(AContext *ctx, const Event::Pitches &pitches, fm::Ticks duration)
+        void Normal::addEvent(AContext *ctx, const Event &ev)
         {
             auto meta = ctx->voiceMetaData();
-			for (const auto &pitch : pitches)
+			for (const auto &pitch : ev.pitches)
 			{
-                NoteEvent note = ctx->createNote(pitch, duration);
-                ctx->addNote(note, meta->position);
+                NoteEvent note = ctx->createNote(pitch, ev.duration, ev.offset);
+                ctx->addNote(note);
 			}
-			ctx->seek(duration);
+			ctx->seek(ev.duration);
         }
 
     }

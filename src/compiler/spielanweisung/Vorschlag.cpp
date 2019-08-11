@@ -6,7 +6,7 @@ namespace sheet {
     namespace compiler {
         using namespace fm;
         const fm::Ticks Vorschlag::defaultDuration = 1.0_N64;
-        void Vorschlag::addEvent(AContext *ctx, const Event::Pitches &pitches, fm::Ticks duration)
+        void Vorschlag::addEvent(AContext *ctx, const Event &ev)
         {
             // auto meta = ctx->voiceMetaData();
             // auto vorschlagDuration = vorschlagNote.duration != Event::NoDuration ? vorschlagNote.duration : defaultDuration;

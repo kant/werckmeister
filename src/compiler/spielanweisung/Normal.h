@@ -9,7 +9,7 @@ namespace sheet {
         public:
             Normal() = default;
             virtual ~Normal() = default;
-            virtual void addEvent(AContext *ctx, const Event::Pitches &pitches, fm::Ticks duration) override;
+            virtual void addEvent(AContext *ctx, const Event &ev) override;
         };
     }
 }

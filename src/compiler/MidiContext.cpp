@@ -46,9 +46,10 @@ namespace sheet {
 			return static_cast<int>(::ceil((expr) * 127.0f / 10.0f));
 		} 
 
-		void MidiContext::addNote(const NoteEvent &note, fm::Ticks absolutePosition)
+		void MidiContext::addNote(const NoteEvent &note)
 		{
 			_checkMidi(midi_);
+			auto absolutePosition = note.absPosition;
 			auto voiceConfig = voiceMetaData<MidiContext::VoiceMetaData>();
 			auto trackMeta = trackMetaData<MidiContext::TrackMetaData>();
 			if (!voiceConfig || !trackMeta) {

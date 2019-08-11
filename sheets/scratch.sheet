@@ -6,16 +6,16 @@ device: SC1 midi 2;
 
 tempo: 130;
 --          instrument dv ch cc pc
-instrumentDef: piano   SC1 2 0 0;
+instrumentDef: piano   SC1 2 0 17;
 
 
 [
 instrument: piano;
 {
-   r2. c4~ | <c cis>1 |
+   --r2. d4~ | d1~ | d |
+   r2. c4~ | <c cis>1~ | <c cis e>1--~ | <c cis e fis>
 }
 {
     \p
-    --c, c, c, c, | c, c, c, c, | 
 }
 ]
