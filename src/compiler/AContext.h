@@ -19,6 +19,7 @@
 #include "error.hpp"
 #include "instrument.h"
 #include "timeInfo.h"
+#include "ContextEvents.h"
 
 namespace sheet {
     namespace compiler {
@@ -67,7 +68,6 @@ namespace sheet {
 				setTrack(trackId);
 				setVoice(voiceId);
 			}
-			virtual void addEvent(const PitchDef &pitch, fm::Ticks absolutePosition, fm::Ticks duration) = 0;
 			virtual ~AContext() {};
 			/**
 			 * creates a track and returns an id.
@@ -158,14 +158,14 @@ namespace sheet {
 			virtual void metaSetVolume(int volume);
 			virtual void metaSetPan(int val);
 			/////// actual context stuff
-			virtual void addEvent(const Event::Pitches &pitches, fm::Ticks duration);
-			virtual void addEvent(const PitchDef &pitch, fm::Ticks duration);
+			virtual void renderPitches(const Event::Pitches &pitches, fm::Ticks duration);
+			virtual NoteEvent createNote(const PitchDef &pitch, fm::Ticks duration);
+			virtual void addNote(const NoteEvent &note, fm::Ticks absolutePosition) = 0;
+			virtual void addEvent(const Event &ev);
 			/*
 			 * value = 0..1
 			 */
 			virtual void addPitchbendEvent(double value, fm::Ticks absolutePosition) = 0;			
-			virtual void startEvent(const PitchDef &pitch, fm::Ticks absolutePosition);
-			virtual void stopEvent(const PitchDef &pitch, fm::Ticks absolutePosition);
 			/**
 			 * if duration == 0 the last event duration will be used
 			 */ 
@@ -173,7 +173,6 @@ namespace sheet {
 			virtual void newBar();
 			virtual void rest(fm::Ticks duration);
 			virtual void setChord(const Event &ev);
-			virtual void addEvent(const Event &ev);
 			virtual fm::Ticks barPos() const;
 			Warnings warnings;
 			/**

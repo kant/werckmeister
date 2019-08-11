@@ -13,6 +13,7 @@
 #include <boost/exception/get_error_info.hpp>
 #include <sheet/tools.h>
 #include <functional>
+#include "preprocessor.h"
 
 namespace sheet {
 
@@ -80,45 +81,11 @@ namespace sheet {
 			currentSheetTemplateRenderer_->seekTo(0);
 		}
 
-		namespace {
-			void renderTiedEvent(AContextPtr ctx, Event &ev, Voice::Events::iterator it, Voice::Events::iterator end)
-			{
-				auto _checkTie = [&ev](const Event &toCheck) {
-					std::vector<sheet::PitchDef> diff;
-					std::set_difference(ev.pitches.begin(), ev.pitches.end(), 
-						toCheck.pitches.begin(), toCheck.pitches.end(), std::inserter(diff, diff.begin()))
-					;
-					if (diff.size() > 0) {
-						FM_THROW(fm::Exception, "try to tying different pitches"); 
-					}
-				};
-				auto lastDuration = ev.duration;
-				for (++it; it!=end; ++it) {
-					if (!it->isTimeConsuming()) {
-						continue;
-					}
-					_checkTie(*it);
-					if (it->duration == 0) {
-						it->duration = lastDuration;
-					} else {
-						lastDuration = it->duration;
-					}
-					ev.duration += it->duration;
-					if (it->type != Event::TiedNote) {
-						it->type = Event::IgnoreAfterTying;
-						break;
-					}
-					it->type = Event::IgnoreAfterTying;
-				}
-				ev.type = Event::Note;
-				ctx->addEvent(ev);
-			}
-		}
-
 		void Compiler::renderTracks()
 		{
 			auto ctx = context();
 			ctx->capabilities.canSeek = false;
+			Preprocessor preprocessor;
 			for (auto &track : document_->sheetDef.tracks)
 			{
 				fm::String type = getFirstMetaValueBy(SHEET_META__TRACK_META_KEY_TYPE, track.trackInfos);
@@ -131,28 +98,13 @@ namespace sheet {
 					[](const auto &x) { return x.name; }, 
 					[](const auto &x) { return x.args; }
 				);
-				
-				for (auto &voice : track.voices)
+				preprocessor.process(track);
+				for (const auto &voice : track.voices)
 				{
 					auto voiceId = ctx->createVoice();
 					ctx->setTarget(trackId, voiceId);
-					auto it = voice.events.begin();
-					auto end = voice.events.end();
-					fm::Ticks lastDuration = VoiceMetaData::DefaultDuration;
-					for (; it!=end; ++it)
+					for (const auto &ev : voice.events)
 					{
-						auto &ev = *it;
-						if (ev.isTimeConsuming() || ev.type == Event::IgnoreAfterTying) {
-							if (ev.duration == 0) {
-								ev.duration = lastDuration;
-							} else {
-								lastDuration = ev.duration;
-							}
-						}
-						if (ev.type == Event::TiedNote) {
-							renderTiedEvent(ctx, ev, it, end);
-							continue;
-						}
 						ctx->addEvent(ev);
 					}
 				}

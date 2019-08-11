@@ -28,7 +28,7 @@ namespace sheet {
 			template<>
 			bool renderEvent<Event::Note>(AContext * ctx, const Event *ev)
 			{
-				ctx->addEvent(ev->pitches, ev->duration);
+				ctx->renderPitches(ev->pitches, ev->duration);
 				return true;
 			}
 
@@ -40,7 +40,7 @@ namespace sheet {
 				auto voicingStratgy = ctx->currentVoicingStrategy();
 				auto pitches = voicingStratgy->get(*chord, *chordDef, ev->pitches, ctx->getTimeInfo());
 
-				ctx->addEvent(pitches, ev->duration);
+				ctx->renderPitches(pitches, ev->duration);
 
 				return true;
 			}
@@ -53,7 +53,7 @@ namespace sheet {
 				auto voicingStratgy = ctx->currentVoicingStrategy();
 				auto pitches = voicingStratgy->get(*chord, *chordDef, ev->pitches, ctx->getTimeInfo());
 
-				ctx->addEvent(pitches, ev->duration);
+				ctx->renderPitches(pitches, ev->duration);
 
 				return true;
 			}
@@ -269,24 +269,15 @@ namespace sheet {
 			return *result;
 		}
 
-		void AContext::addEvent(const PitchDef &rawPitch, fm::Ticks duration)
+		NoteEvent AContext::createNote(const PitchDef &rawPitch, fm::Ticks duration)
 		{
 			using namespace fm;
 			PitchDef pitch = resolvePitch(rawPitch);
-			auto meta = voiceMetaData();
-			addEvent(pitch, meta->position, duration);
-		}
-
-		void AContext::startEvent(const PitchDef &pitch, fm::Ticks absolutePosition)
-		{
-			auto meta = voiceMetaData();
-			meta->startedEvents.insert(pitch);
-		}
-
-		void AContext::stopEvent(const PitchDef &pitch, fm::Ticks absolutePosition)
-		{
-			auto meta = voiceMetaData();
-			meta->startedEvents.erase(pitch);
+			NoteEvent result;
+			result.duration = duration;
+			result.pitch = pitch.pitch;
+			result.octave = pitch.octave;
+			return result;
 		}
 
 		fm::Ticks AContext::barPos() const
@@ -307,7 +298,7 @@ namespace sheet {
 			}
 		}
 
-		void AContext::addEvent(const Event::Pitches &pitches, fm::Ticks duration)
+		void AContext::renderPitches(const Event::Pitches &pitches, fm::Ticks duration)
 		{
 			auto meta = voiceMetaData();
 			auto tmpExpression = meta->expression;

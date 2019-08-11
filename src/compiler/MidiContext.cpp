@@ -29,9 +29,9 @@ namespace sheet {
 		}
 
 
-		int MidiContext::getAbsolutePitch(const PitchDef &pitch)
+		int MidiContext::getAbsolutePitch(const NoteEvent &note)
 		{
-			return MidiSchluesselCOffset + pitch.pitch + (pitch.octave * fm::NotesPerOctave);
+			return MidiSchluesselCOffset + note.pitch + (note.octave * fm::NotesPerOctave);
 		}
 
 		int MidiContext::getAbsoluteVelocity(fm::Expression expression)
@@ -46,7 +46,7 @@ namespace sheet {
 			return static_cast<int>(::ceil((expr) * 127.0f / 10.0f));
 		} 
 
-		void MidiContext::addEvent(const PitchDef &pitch, fm::Ticks absolutePosition, fm::Ticks duration)
+		void MidiContext::addNote(const NoteEvent &note, fm::Ticks absolutePosition)
 		{
 			_checkMidi(midi_);
 			auto voiceConfig = voiceMetaData<MidiContext::VoiceMetaData>();
@@ -57,48 +57,13 @@ namespace sheet {
 			const auto &instrumentDef = trackMeta->instrument;
 			auto event = fm::midi::Event::NoteOn(instrumentDef.channel, 
 				absolutePosition, 
-				getAbsolutePitch(pitch), 
+				getAbsolutePitch(note), 
 				getAbsoluteVelocity(voiceConfig->expression)
 			);
 			addEvent(event, track());
 			event = fm::midi::Event::NoteOff(instrumentDef.channel, 
-				absolutePosition + duration, 
-				getAbsolutePitch(pitch)
-			);
-			addEvent(event, track());
-		}
-
-		void MidiContext::startEvent(const PitchDef &pitch, fm::Ticks absolutePosition)
-		{
-			Base::startEvent(pitch, absolutePosition);
-			_checkMidi(midi_);
-			auto voiceConfig = voiceMetaData<MidiContext::VoiceMetaData>();
-			auto trackMeta = trackMetaData<MidiContext::TrackMetaData>();
-			if (!voiceConfig || !trackMeta) {
-				FM_THROW(Exception, "meta data = null");
-			}			
-			const auto &instrumentDef = trackMeta->instrument;
-			auto event = fm::midi::Event::NoteOn(instrumentDef.channel, 
-				absolutePosition, 
-				getAbsolutePitch(pitch), 
-				getAbsoluteVelocity(voiceConfig->expression)
-			);
-			addEvent(event, track());
-		}
-
-		
-		void MidiContext::stopEvent(const PitchDef &pitch, fm::Ticks absolutePosition)
-		{
-			Base::stopEvent(pitch, absolutePosition);
-			_checkMidi(midi_);
-			auto trackMeta = trackMetaData<MidiContext::TrackMetaData>();
-			if (!trackMeta) {
-				FM_THROW(Exception, "meta data = null");
-			}			
-			const auto &instrumentDef = trackMeta->instrument;
-			auto event = fm::midi::Event::NoteOff(instrumentDef.channel, 
-				absolutePosition, 
-				getAbsolutePitch(pitch)
+				absolutePosition + note.duration, 
+				getAbsolutePitch(note)
 			);
 			addEvent(event, track());
 		}

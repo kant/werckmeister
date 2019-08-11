@@ -27,6 +27,7 @@ SET (SRC_FETZER_LIB
     compiler/voicings/Lua.cpp
     compiler/metaData.cpp
     compiler/sheetTemplateRenderer.cpp
+    compiler/preprocessor.cpp
     compiler/error.cpp
     compiler/lua/luaTimeInfo.cpp
     sheet/Event.cpp

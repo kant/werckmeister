@@ -21,9 +21,11 @@ namespace sheet {
 			});
 
 			auto arpduration = duration / pitches.size();
+			auto meta = ctx->voiceMetaData();
 			for (const auto &pitch : pitchesCopy)
 			{
-				ctx->addEvent(pitch, duration);
+                NoteEvent note = ctx->createNote(pitch, duration);
+                ctx->addNote(note, meta->position);
 				ctx->seek(arpduration);
 			}
 			auto roundingError = duration - (arpduration * pitches.size());

@@ -1,29 +1,21 @@
 @load "./chords/default.chords";
-@load "./voicings/guitar.lua";
-@load "./voicings/voicelead.lua";
-@load "./voicings/simple.lua";
+@load "./pitchmaps/defaultMidiDrumMap.pitchmap";
+@load "./templates/ennio.template";
 
-device: SC1 midi 1;
+device: SC1 midi 2;
 
-tempo: 120;
-instrumentDef: piano   SC1 3 0 0;
-instrumentDef: bass    SC1 4 0 16;
-instrumentDef: organ    SC1 4 0 16;
-
-instrumentConf: piano 
-    volume 100
-    voicingStrategy guitar range tenor
-;
-
+tempo: 130;
+--          instrument dv ch cc pc
+instrumentDef: piano   SC1 2 0 0;
 
 
 [
 instrument: piano;
 {
-    g4. e8 e d4 g8  | g4 e8 e4 e8 d g~ | g4 e4 e4 d8 g~ | g8 g e e4 e8 d f~ |
+   r2. c4~ | <c cis>1 |
+}
+{
+    \p
+    --c, c, c, c, | c, c, c, c, | 
 }
 ]
-
-
-
-
