@@ -10,32 +10,46 @@
 
 namespace sheet {
     namespace compiler {
+        struct MidiInstrumentDef : AInstrumentDef {
+            int id = 0;
+			fm::String deviceName;
+			int channel = 0;
+			int cc = 0;
+			int pc = 0;
+			int volume = 100;
+			int pan = 50;
+			AContext::TrackId trackId = AContext::INVALID_TRACK_ID;
+		};
         class MidiContext : public AContext {
 		public:
 			typedef AContext Base;
 			typedef std::unordered_map<fm::String, MidiInstrumentDef> MidiInstrumentDefs;
+			typedef std::vector<MidiInstrumentDef*> MidiInstrumentReferences;
 			typedef std::vector<MidiInstrumentDef> InstrumentDefContainer;
 			struct VoiceMetaData : sheet::compiler::VoiceMetaData {
 				fm::Ticks positionOffset = 0;
+				std::vector<MidiInstrumentDef> instruments;
 			};
 			struct TrackMetaData : sheet::compiler::TrackMetaData {
-				MidiInstrumentDef instrument;
+				std::vector<MidiInstrumentDef> instruments;
 			};
 			void midi(fm::midi::MidiPtr midi) { midi_ = midi; }
 			fm::midi::MidiPtr midi() const { return midi_; }
 			virtual TrackId createTrackImpl() override;
 			virtual VoiceId createVoiceImpl() override;
 			virtual void renderPitch(const PitchDef &pitch, fm::Ticks absolutePosition, double velocity, fm::Ticks duration) override;
-			virtual void addEvent(const fm::midi::Event &ev, TrackId trackId = INVALID_TRACK_ID);
+			virtual void addEvent(const fm::midi::Event &ev, const MidiInstrumentReferences &instruments);
+			virtual void addEvent(const fm::midi::Event &ev, TrackId trackId);
 			virtual void renderPitchbend(double value, fm::Ticks absolutePosition) override;
 			virtual void startEvent(const PitchDef &pitch, fm::Ticks absolutePosition, double velocity) override;
 			virtual void stopEvent(const PitchDef &pitch, fm::Ticks absolutePosition) override;
 			virtual void metaSetChannel(int channel);
-			virtual void metaSoundSelect(int cc, int pc);
+			virtual void metaSoundSelect(const MidiInstrumentDef &instrument);
+			virtual void metaSoundSelect(int cc, int pc, int channel, TrackId trackId);
 			virtual void metaInstrument(const fm::String &uname, int channel, int cc, int pc);
 			virtual void metaInstrument(const fm::String &uname, const fm::String &deviceName, int channel, int cc, int pc);
 			virtual void metaSetInstrumentConfig(const fm::String &uname, const Event::Args &args);
-			virtual void metaSetInstrument(const fm::String &uname) override;
+			virtual void metaSetInstruments(const std::vector<fm::String> &unames) override;
 			virtual void metaSetTempo(double bpm) override;
 			virtual void processMeta(const fm::String &command, const std::vector<fm::String> &args) override;
 			virtual void metaSetVolume(int volume) override;
@@ -44,10 +58,11 @@ namespace sheet {
 			/**
 			 * sends a custom meta event containing a device name
 			 */
-			virtual void addDeviceChangeEvent(const fm::String &deviceName, fm::Ticks position);
+			virtual void addDeviceChangeEvent(const MidiInstrumentDef &instrument);
 			virtual AInstrumentDef * getInstrumentDef(const fm::String &uname) override;
 			MidiInstrumentDef * getMidiInstrumentDef(const fm::String &uname);
-			virtual AInstrumentDef * currentInstrumentDef() override;
+			virtual std::vector<AInstrumentDef*> currentInstruments() const override;
+			virtual MidiInstrumentReferences currentMidiInstruments() const;
 			const MidiInstrumentDefs & midiInstrumentDefs() const { return this->midiInstrumentDefs_; }
 		protected:
 			virtual Base::VoiceMetaDataPtr createVoiceMetaData() override;

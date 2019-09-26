@@ -175,14 +175,15 @@ namespace sheet {
 
 		double AContext::velocity()
 		{
-			auto instrument = currentInstrumentDef();
-			auto expression = voiceMetaData()->expression;
-			auto velOverride = instrument->velocityOverride.find(expression);
-			if (velOverride != instrument->velocityOverride.end()) {
-				return velOverride->second / 100.;
-			}
-			double expr = static_cast<double>(expression);
-			return  expr / 10.;
+			warn("TODO: velocity");
+			// auto instrument = currentInstrumentDef();
+			// auto expression = voiceMetaData()->expression;
+			// auto velOverride = instrument->velocityOverride.find(expression);
+			// if (velOverride != instrument->velocityOverride.end()) {
+			// 	return velOverride->second / 100.;
+			// }
+			// double expr = static_cast<double>(expression);
+			// return  expr / 10.;
 		}
 
 		void AContext::renderPitch(const PitchDef &rawPitch, fm::Ticks duration, double velocity, bool tying)
@@ -348,7 +349,7 @@ namespace sheet {
 					return;
 				}
 				if (command == SHEET_META__INSTRUMENT) {
-					metaSetInstrument(getArgument<fm::String>(args, 0));
+					metaSetInstruments(args);
 					return;
 				}
 			} catch(const std::exception &ex) {
@@ -537,10 +538,11 @@ namespace sheet {
 			if (meta->voicingStrategy) { // first voice setup
 				return meta->voicingStrategy;
 			}
-			auto currentInstrument = currentInstrumentDef();
-			if (currentInstrument && currentInstrument->voicingStrategy) { // then instrument config
-				return currentInstrument->voicingStrategy;
-			}
+			warn("TODO: currentVoicingStrategy");
+			// auto currentInstrument = currentInstrumentDef();
+			// if (currentInstrument && currentInstrument->voicingStrategy) { // then instrument config
+			// 	return currentInstrument->voicingStrategy;
+			// }
 			return defaultVoiceStrategy_;
 		}
 	}

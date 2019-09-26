@@ -117,7 +117,7 @@ namespace sheet {
 			virtual fm::Expression getExpression(const fm::String &str) const;
 			virtual AModificationPtr spielanweisung();
 			virtual AInstrumentDef * getInstrumentDef(const fm::String &uname) = 0;
-			virtual AInstrumentDef * currentInstrumentDef() = 0;
+			virtual std::vector<AInstrumentDef*> currentInstruments() const = 0;
 			virtual fm::Ticks currentPosition() const;
 			virtual fm::Ticks maxPosition() const;
 			TimeInfo getTimeInfo() const;
@@ -138,7 +138,7 @@ namespace sheet {
 			void processMeta(const TContainer &container, 
 							std::function<fm::String(const typename TContainer::value_type&)> fcommand, 
 							std::function<std::vector<fm::String>(const typename TContainer::value_type&)> fargs);
-			virtual void metaSetInstrument(const fm::String &uname) {}
+			virtual void metaSetInstruments(const std::vector<fm::String> &unames) {}
 			virtual void metaSetSheetTemplate(const Event::Args &args);
 			virtual void metaSetExpression(const fm::String &value);
 			virtual void metaSetSingleExpression(const fm::String &value);
