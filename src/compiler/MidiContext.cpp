@@ -37,10 +37,37 @@ namespace sheet {
 			return std::min(127, std::max(0, result));
 		} 
 
-		std::vector<AInstrumentDef*> MidiContext::currentInstruments() const
+		std::vector<AInstrumentDef*> MidiContext::instruments() const
 		{
 			auto midiInstruments = currentMidiInstruments();
 			return std::vector<AInstrumentDef*>(midiInstruments.begin(), midiInstruments.end());
+		}
+
+		MidiInstrumentDef& MidiContext::midiInstrument() const
+		{
+			auto meta = voiceMetaData<MidiContext::VoiceMetaData>();
+			if (!meta) {
+				FM_THROW(Exception, "missing voice meta data");
+			}
+			return meta->currentInstrument;
+		}
+
+		void MidiContext::instrument(const AInstrumentDef& instrument)
+		{
+			auto meta = voiceMetaData<MidiContext::VoiceMetaData>();
+			if (!meta) {
+				FM_THROW(Exception, "missing voice meta data");
+			}
+			const MidiInstrumentDef *midiInstrument = dynamic_cast<const MidiInstrumentDef*>(&instrument);
+			if (midiInstrument == nullptr) {
+				FM_THROW(Exception, "invalid instrument type");
+			}
+			meta->currentInstrument = *midiInstrument;
+		}
+		
+		AInstrumentDef* MidiContext::instrument() const
+		{
+			return &midiInstrument();
 		}
 
 		std::vector<MidiInstrumentDef*> MidiContext::currentMidiInstruments() const
@@ -71,12 +98,12 @@ namespace sheet {
 				getAbsolutePitch(pitch), 
 				toMidiVelocity(velocity)
 			);
-			addEvent(event, currentMidiInstruments());
+			addEvent(event, midiInstrument());
 			event = fm::midi::Event::NoteOff(DEFAULT_CHANNEL, 
 				absolutePosition + duration, 
 				getAbsolutePitch(pitch)
 			);
-			addEvent(event, currentMidiInstruments());
+			addEvent(event, midiInstrument());
 		}
 
 		void MidiContext::startEvent(const PitchDef &pitch, fm::Ticks absolutePosition, double velocity)
@@ -88,7 +115,7 @@ namespace sheet {
 				getAbsolutePitch(pitch), 
 				toMidiVelocity(velocity)
 			);
-			addEvent(event, currentMidiInstruments());
+			addEvent(event, midiInstrument());
 		}
 
 		
@@ -100,10 +127,10 @@ namespace sheet {
 				absolutePosition, 
 				getAbsolutePitch(pitch)
 			);
-			addEvent(event, currentMidiInstruments());
+			addEvent(event, midiInstrument());
 		}
 
-		void MidiContext::addEvent(const fm::midi::Event &ev, TrackId trackId)
+		void MidiContext::addEvent(const fm::midi::Event &ev, TrackId trackId, const int *channel)
 		{
 			if (trackId == INVALID_TRACK_ID) {
 				trackId = track(); // context's current track
@@ -112,38 +139,32 @@ namespace sheet {
 				FM_THROW(Exception, "failed to add an event without related track");
 			}
 			auto voiceConfig = voiceMetaData<MidiContext::VoiceMetaData>();
-			if (voiceConfig) // && voiceConfig->tempoFactor != 1) 
+			bool hasTempoFactor = (voiceConfig != nullptr) && (voiceConfig->tempoFactor != 1);
+			auto evCopy = ev;
+			if (channel != nullptr) {
+				evCopy.channel(*channel);
+			}
+			if (hasTempoFactor) 
 			{
-				auto evCopy = ev;
 				evCopy.absPosition(evCopy.absPosition() * voiceConfig->tempoFactor + voiceConfig->positionOffset);
-				midi_->tracks().at(trackId)->events().add(evCopy);
-				return;
 			}
 			try {
-				midi_->tracks().at(trackId)->events().add(ev);
+				midi_->tracks().at(trackId)->events().add(evCopy);
 			} catch(...) {
 				FM_THROW(Exception, "failed to access track with id: " + std::to_string(trackId));
 			}
 		}
 
-		void MidiContext::addEvent(const fm::midi::Event &ev, const MidiInstrumentReferences &instruments)
+		void MidiContext::addEvent(const fm::midi::Event &ev, const MidiInstrumentDef &instrument)
 		{
-			if (instruments.empty()) {
-				addEvent(ev, INVALID_TRACK_ID);
-				return;
-			}
-			for (auto instrument : instruments) {
-				auto evCopy = ev;
-				evCopy.channel(instrument->channel);
-				addEvent(evCopy, instrument->trackId);
-			}
+			addEvent(ev, instrument.trackId, &instrument.channel);
 		}
 
 		void MidiContext::renderPitchbend(double value, fm::Ticks absolutePosition) 
 		{
 			_checkMidi(midi_);		
 			auto event = fm::midi::Event::PitchBend(DEFAULT_CHANNEL, absolutePosition, value);
-			addEvent(event, currentMidiInstruments());
+			addEvent(event, midiInstrument());
 		}
 
 		MidiContext::Base::TrackId MidiContext::createTrackImpl()
@@ -197,7 +218,7 @@ namespace sheet {
 			auto meta = voiceMetaData<MidiContext::VoiceMetaData>();
 			auto sigEvent = fm::midi::Event::MetaSignature(upper, lower);
 			sigEvent.absPosition(currentPosition());
-			addEvent(sigEvent, currentMidiInstruments());
+			addEvent(sigEvent, midiInstrument());
 		}
 
 		void MidiContext::metaSetChannel(int channel)
@@ -257,7 +278,7 @@ namespace sheet {
 			auto channel = DEFAULT_CHANNEL;
 			auto ev = fm::midi::Event::CCVolume(channel, midiVol);
 			ev.absPosition(currentPosition());
-			addEvent(ev, currentMidiInstruments()); 
+			addEvent(ev, midiInstrument()); 
 		}
 
 		void MidiContext::metaSetPan(int val)
@@ -272,7 +293,7 @@ namespace sheet {
 			auto channel = DEFAULT_CHANNEL;
 			auto ev = fm::midi::Event::CCPan(channel, midiVal);
 			ev.absPosition(currentPosition());
-			addEvent(ev, currentMidiInstruments()); 
+			addEvent(ev, midiInstrument()); 
 		}
 		namespace {
 			fm::midi::Event __createVolumeEvent(MidiInstrumentDef &def, fm::Ticks pos)
@@ -339,9 +360,6 @@ namespace sheet {
 			Base::metaSetInstruments(unames);
 			auto voiceMeta = voiceMetaData<MidiContext::VoiceMetaData>();
 			auto trackMeta = trackMetaData<MidiContext::TrackMetaData>();
-			if (voiceMeta) {
-				voiceMeta->instruments.clear();
-			}
 			if (trackMeta) {
 				trackMeta->instruments.clear();
 			}
@@ -357,12 +375,7 @@ namespace sheet {
 				auto trackName = fm::midi::Event::MetaTrack(uname);
 				trackName.absPosition(0);
 				addEvent(trackName, instrumentDef->trackId);
-				
-				if (false) {
-					voiceMeta->instruments.push_back(*instrumentDef);
-				} else {
-					trackMeta->instruments.push_back(*instrumentDef);
-				}
+				trackMeta->instruments.push_back(*instrumentDef);
 				if (!instrumentDef->deviceName.empty()) {
 					addDeviceChangeEvent(*instrumentDef);
 				}

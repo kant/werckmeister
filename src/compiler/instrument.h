@@ -13,6 +13,7 @@ namespace sheet {
 			VoicingStrategyPtr voicingStrategy;
 			typedef std::unordered_map<fm::Expression, int> VelocityOverride;
 			VelocityOverride velocityOverride;
+			virtual ~AInstrumentDef() = default;
 		};
     }
 }

@@ -109,6 +109,20 @@ namespace sheet {
 
 		void SheetEventRenderer::__renderEvent__(const Event &_ev)
 		{
+			auto instruments = ctx_->instruments();
+			if (instruments.empty()) {
+				__renderEventImpl__(_ev);
+				return;
+			}
+			for (const auto instrument : instruments) {
+				ctx_->instrument(*instrument);
+				__renderEventImpl__(_ev);
+			}
+			ctx_->seek(_ev.duration);
+		}
+
+		void SheetEventRenderer::__renderEventImpl__(const Event &_ev)
+		{
 			Event ev = _ev;
 			auto meta = ctx_->voiceMetaData();
 			auto tmpExpression = meta->expression;
@@ -138,7 +152,6 @@ namespace sheet {
 					__renderEventPitches__(event);
 				}
 			}
-			ctx_->seek(ev.duration);
 		}
 
 		void SheetEventRenderer::__renderEventPitches__(const Event &ev)

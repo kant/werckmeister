@@ -117,7 +117,9 @@ namespace sheet {
 			virtual fm::Expression getExpression(const fm::String &str) const;
 			virtual AModificationPtr spielanweisung();
 			virtual AInstrumentDef * getInstrumentDef(const fm::String &uname) = 0;
-			virtual std::vector<AInstrumentDef*> currentInstruments() const = 0;
+			virtual std::vector<AInstrumentDef*> instruments() const = 0;
+			virtual void instrument(const AInstrumentDef& instrument) = 0;
+			virtual AInstrumentDef* instrument() const = 0;
 			virtual fm::Ticks currentPosition() const;
 			virtual fm::Ticks maxPosition() const;
 			TimeInfo getTimeInfo() const;

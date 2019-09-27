@@ -28,7 +28,7 @@ namespace sheet {
 			typedef std::vector<MidiInstrumentDef> InstrumentDefContainer;
 			struct VoiceMetaData : sheet::compiler::VoiceMetaData {
 				fm::Ticks positionOffset = 0;
-				std::vector<MidiInstrumentDef> instruments;
+				MidiInstrumentDef currentInstrument;
 			};
 			struct TrackMetaData : sheet::compiler::TrackMetaData {
 				std::vector<MidiInstrumentDef> instruments;
@@ -38,8 +38,8 @@ namespace sheet {
 			virtual TrackId createTrackImpl() override;
 			virtual VoiceId createVoiceImpl() override;
 			virtual void renderPitch(const PitchDef &pitch, fm::Ticks absolutePosition, double velocity, fm::Ticks duration) override;
-			virtual void addEvent(const fm::midi::Event &ev, const MidiInstrumentReferences &instruments);
-			virtual void addEvent(const fm::midi::Event &ev, TrackId trackId);
+			virtual void addEvent(const fm::midi::Event &ev, const MidiInstrumentDef &instrument);
+			virtual void addEvent(const fm::midi::Event &ev, TrackId trackId, const int *channel = nullptr);
 			virtual void renderPitchbend(double value, fm::Ticks absolutePosition) override;
 			virtual void startEvent(const PitchDef &pitch, fm::Ticks absolutePosition, double velocity) override;
 			virtual void stopEvent(const PitchDef &pitch, fm::Ticks absolutePosition) override;
@@ -61,9 +61,12 @@ namespace sheet {
 			virtual void addDeviceChangeEvent(const MidiInstrumentDef &instrument);
 			virtual AInstrumentDef * getInstrumentDef(const fm::String &uname) override;
 			MidiInstrumentDef * getMidiInstrumentDef(const fm::String &uname);
-			virtual std::vector<AInstrumentDef*> currentInstruments() const override;
+			virtual std::vector<AInstrumentDef*> instruments() const override;
 			virtual MidiInstrumentReferences currentMidiInstruments() const;
 			const MidiInstrumentDefs & midiInstrumentDefs() const { return this->midiInstrumentDefs_; }
+			virtual void instrument(const AInstrumentDef& instrument);
+			virtual AInstrumentDef* instrument() const;
+			virtual MidiInstrumentDef& midiInstrument() const;
 		protected:
 			virtual Base::VoiceMetaDataPtr createVoiceMetaData() override;
 			virtual Base::TrackMetaDataPtr createTrackMetaData() override;

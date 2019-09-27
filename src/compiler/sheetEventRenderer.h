@@ -13,6 +13,7 @@ namespace sheet {
             AContext* context() const { return this->ctx_; }
             virtual void addEvent(const Event &event);
             virtual void __renderEvent__(const Event &_ev);
+            virtual void __renderEventImpl__(const Event &_ev);
             virtual void __renderEventPitches__(const Event &noteEvent);
             virtual void __renderPitchBendEvent__(const Event &pitchBendEvent);
         protected:
