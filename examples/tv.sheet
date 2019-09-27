@@ -55,7 +55,7 @@ instrumentConf: bell
     volume 90;   
 
 instrumentConf: drums
-    volume 85;       
+    volume 95;       
 
 instrumentConf: rhythm
     voicingStrategy voicelead range tenor

@@ -32,7 +32,6 @@ namespace sheet {
 
 		int MidiContext::toMidiVelocity(double velocity)
 		{
-			return 127;
 			int result = static_cast<int>(::ceil( velocity * 127.0 ));
 			return std::min(127, std::max(0, result));
 		} 
