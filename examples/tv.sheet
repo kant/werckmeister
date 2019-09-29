@@ -14,7 +14,7 @@
 @load "templates/rhythm.reggae.template";
 @load "templates/drums.country.template";
 @load "templates/bass.country.template";
-
+@load "lua/mods/guitarStroke.lua";
 
 device: SC1 midi 2;
 
@@ -23,13 +23,16 @@ instrumentDef: piano      SC1 0 0 0;
 instrumentDef: lead       SC1 1 0 105;
 instrumentDef: lead2      SC1 2 0 25;
 instrumentDef: sitar      SC1 6 0 104;
-instrumentDef: rhythm     SC1 3 0 28;
+instrumentDef: rhythm     SC1 3 0 25;
 instrumentDef: bass       SC1 4 0 26;
 instrumentDef: bell       SC1 5 0 14;
 instrumentDef: drums      SC1 9 0 0;
 
 instrumentConf: rhythm
-    volume 70;   
+    voicingStrategy guitar 
+    mod guitarStroke 
+    pan 40
+    volume 75;   
 
 instrumentConf: bass
     voicingStrategy simple range contrabass
@@ -55,12 +58,8 @@ instrumentConf: bell
     volume 90;   
 
 instrumentConf: drums
-    volume 95;       
+    volume 90;       
 
-instrumentConf: rhythm
-    voicingStrategy voicelead range tenor
-    pan 40
-    volume 75;   
 
 [
 type: template;
@@ -187,7 +186,7 @@ type: sheet;
         x
         drums.disco.normal
         bass.country.normal
-        rhythm.bossanova.normal
+        rhythm.country.normal
     /  
     A-7 |  
     ----------
@@ -195,7 +194,7 @@ type: sheet;
         x
         drums.fill1
         bass.country.normal
-        rhythm.bossanova.normal
+        rhythm.country.ende
     /
     /tempo: normal/
     G7  |

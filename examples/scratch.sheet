@@ -14,7 +14,8 @@ instrumentDef: rhythm     SC1 1 0 25;
 
 
 instrumentConf: rhythm
-    voicingStrategy guitar range tenor
+    voicingStrategy guitar range baritone
+    mod guitarStroke
     volume 80;   
 
 [
@@ -22,7 +23,6 @@ type: template;
 name: rhythm;
 instrument: rhythm;
 {
-    /do: guitarStroke/
     <I II III IV V VI VII>8 
     <I II III IV V VI VII>8 r4 
     
@@ -31,7 +31,6 @@ instrument: rhythm;
     
     <I II III IV V VI VII>8 
     <I II III IV V VI VII>8 
-    
      |
 }
 ]
