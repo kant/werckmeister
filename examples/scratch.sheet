@@ -4,37 +4,69 @@
 @load "lua/voicings/guitar.lua";
 @load "lua/mods/swing.lua";
 @load "lua/mods/staccato.lua";
-@load "templates/drums.disco.template";
-@load "templates/bass.disco.template";
-@load "templates/bass.bossanova.template";
-@load "templates/rhythm.country.template";
-@load "templates/rhythm.bossanova.template";
-@load "templates/rhythm.reggae.template";
-@load "templates/drums.country.template";
-@load "templates/bass.country.template";
+@load "lua/mods/guitarStroke.lua";
 
 -- comment
-
 device: SC1 midi 2;
 
-tempo: 73;
-instrumentDef: piano      SC1 0 0 0;
-instrumentDef: lead       SC1 2 0 105;
-instrumentDef: bass       SC1 4 0 16;
+tempo: 120;
+instrumentDef: rhythm     SC1 1 0 25;
+
+
+instrumentConf: rhythm
+    voicingStrategy guitar range tenor
+    volume 80;   
+
+[
+type: template;
+name: rhythm;
+instrument: rhythm;
+{
+    /do: guitarStroke/
+    <I II III IV V VI VII>8 
+    <I II III IV V VI VII>8 r4 
+    
+    <I II III IV V VI VII>8 
+    <I II III IV V VI VII>8 
+    
+    <I II III IV V VI VII>8 
+    <I II III IV V VI VII>8 
+    
+     |
+}
+]
+
+
 
 
 
 
 
 [
-instrument: lead;
-{
-    /instrument: lead piano bass/
-   c d e f |
+type: sheet;
+{    
+    
+    G | G | G | G    | G   | G7 | G6 | G | G | G7 |
+
+    G    | G   | G7 | G6 | G | G |
+    -- |:   
+    Bes7 | A-7 | G |  -- :|
+    -- |:
+    Bes7 | A-7 | G | D7 | F | A-7 | D7 | D7 | F |
+    A-7 | 
+    
+    G7  | 
+    G |
+    G   | G7 | G6 | G | G | G7 |
+    G    | G   | G7 | G6 | G | G |
+    -- |:
+    Bes7 | A-7 | G |  -- :|
+    -- |:
+    Bes7 | A-7 | G | D7 | F | A-7 | D7 | D7 | F |
+    A-7 |  G7  | G7 |
+  
 }
 ]
-
-
 
 
 
