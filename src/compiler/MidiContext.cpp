@@ -6,6 +6,7 @@
 #include "sheet/tools.h"
 #include <algorithm>
 #include <fm/werckmeister.hpp>
+#include "modification/AModification.h"
 
 #define SHEET_MASTER_TRACKNAME "master track"
 
@@ -336,6 +337,18 @@ namespace sheet {
 				instrumentDef->voicingStrategy = wm.getVoicingStrategy(*itName);
 				instrumentDef->voicingStrategy->setArguments(Event::Args(itName, argsEnd));
 			}
+			// mod
+			argIt = std::find(argsBegin, argsEnd, SHEET_META__SET_MOD);
+			if (argIt != argsEnd) {
+				auto &wm = fm::getWerckmeister();
+				auto itName = argIt + 1;
+				if (itName == argsEnd) {
+					FM_THROW(Exception, fm::String("missing argument for ") + SHEET_META__SET_MOD);
+				}
+				auto mod = wm.getModification(*itName);
+				instrumentDef->modifications.push_back(mod);
+				mod->setArguments(Event::Args(itName, argsEnd));
+			}			
 			// velocity overrides
 			auto assignIfSet = [&argsExceptFirst, instrumentDef, this](const fm::String &expression){
 				auto foundValue = sheet::getArgValueFor<int>(expression, argsExceptFirst);
