@@ -39,9 +39,9 @@ BOOST_AUTO_TEST_CASE(test_endswap)
 BOOST_AUTO_TEST_CASE(test_resource_loader)
 {
 #ifdef WIN32
-	auto resource = fm::getWerckmeister().openResource(FM_STRING("../../sheets/chords/default.chords"));
+	auto resource = fm::getWerckmeister().openResource(FM_STRING("../../examples/chords/default.chords"));
 #else
-	auto resource = fm::getWerckmeister().openResource(FM_STRING("../sheets/chords/default.chords"));
+	auto resource = fm::getWerckmeister().openResource(FM_STRING("../examples/chords/default.chords"));
 #endif
 	fm::StreamBuffIterator eos;
 	fm::StreamBuffIterator it(*resource.get());
@@ -256,6 +256,38 @@ BOOST_AUTO_TEST_CASE(position_to_row_and_column_ipanema)
 	BOOST_CHECK(std::get<1>(rc) == 4);
 }
 
+BOOST_AUTO_TEST_CASE(test_map_arguments_by_keyword)
+{
+	std::vector<fm::String> args = {
+			"keyword1", "value1", "value2",
+			"keyword2", "value3", "value4", "value5",
+	};
+	std::vector<fm::String> keywords = {"keyword1", "keyword2"};
+	auto keywordsAndValues = sheet::mapArgumentsByKeywords(args, keywords);
+	BOOST_CHECK(keywordsAndValues.size() == 5);
+	BOOST_CHECK(keywordsAndValues.count("keyword1") == 2);
+	BOOST_CHECK(keywordsAndValues.count("keyword2") == 3);
+	auto it = keywordsAndValues.equal_range("keyword1").first;
+	BOOST_CHECK((it++)->second == "value1");
+	BOOST_CHECK((it)->second == "value2");
+	it = keywordsAndValues.equal_range("keyword2").first;
+	BOOST_CHECK((it++)->second == "value3");
+	BOOST_CHECK((it++)->second == "value4");	
+	BOOST_CHECK((it)->second == "value5");	
+}
+
+BOOST_AUTO_TEST_CASE(test_map_arguments_by_keyword_2)
+{
+	std::vector<fm::String> args = {"value1", "value2", "value3"};
+	std::vector<fm::String> keywords = {"keyword1", "keyword2"};
+	auto keywordsAndValues = sheet::mapArgumentsByKeywords(args, keywords);
+	BOOST_CHECK(keywordsAndValues.size() == 3);
+	BOOST_CHECK(keywordsAndValues.count("") == 3);
+	auto it = keywordsAndValues.equal_range("").first;
+	BOOST_CHECK((it++)->second == "value1");
+	BOOST_CHECK((it++)->second == "value2");	
+	BOOST_CHECK((it)->second == "value3");	
+}
 
 
 #if 0

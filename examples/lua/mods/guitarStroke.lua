@@ -2,18 +2,29 @@ require "lua/com/com"
 require "events"
 
 local direction = "up"
+local mode = "alternate"
 
 function perform(eventsOrigin, args, timeinfo)
     args = tokeyvalue(args)
     local event = eventsOrigin[1]
     local events = { }
     local comparer = pitchCompare
+    if args.mode ~=nil then
+        mode = args.mode
+    end
+    if args.direction ~=nil then
+        direction = args.direction
+    end
     if direction == "down" then
         comparer = pitchCompareReversed
-        direction = "up"
+        if mode == "alternate" then
+            direction = "up"
+        end
     else
         comparer = pitchCompare
-        direction = "down"
+        if mode == "alternate" then
+            direction = "down"
+        end
     end
     local value = 64
     if args.value ~= nil then

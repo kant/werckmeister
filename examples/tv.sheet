@@ -29,7 +29,7 @@ instrumentDef: bell       SC1 5 0 14;
 instrumentDef: drums      SC1 9 0 0;
 
 instrumentConf: rhythm
-    voicingStrategy guitar 
+    voicingStrategy guitar range tenor
     mod guitarStroke 
     pan 40
     volume 75;   
@@ -161,7 +161,7 @@ type: sheet;
         bass.country.normal
         rhythm.bossanova.normal
     /   
-    G | G | G | G    | G   | G7 | G6 | G | G | G7 |
+    G | G | G | G    | G   | G7 | G6 | G/5 | G | G7 |
     ----------
     /template:  
         x
@@ -169,7 +169,7 @@ type: sheet;
         bass.country.normal
         rhythm.bossanova.normal
     / 
-    G    | G   | G7 | G6 | G | G |
+    G    | G   | G7 | G6 | G/5 | G |
     -- |:
     ----------
     /template:  
@@ -206,7 +206,7 @@ type: sheet;
         rhythm.country.normal
     /
     /tempo: double/
-    G   | G7 | G6 | G | G | G7 |
+    G   | G7 | G6 | G/5 | G | G7 |
     ----------
     /template:  
         x
@@ -214,7 +214,7 @@ type: sheet;
         bass.bossanova.normal
         rhythm.country.normal
     /
-    G    | G   | G7 | G6 | G | G |
+    G    | G   | G7 | G6 | G/5 | G |
     -- |:
     ----------
     /template:  
