@@ -133,6 +133,10 @@ namespace sheet {
 			}
 			ev.velocity = ctx_->velocity();
 			AModification::Events events = { ev };
+			auto sanweis = ctx_->spielanweisung();
+			if (sanweis) {
+				sanweis->perform(ctx_, events);
+			}			
 			for (auto mod : meta->modifications) {
 				mod->perform(ctx_, events);
 			}
@@ -146,10 +150,6 @@ namespace sheet {
 				}						
 			}
 			meta->modificationsOnce.clear();
-			auto sanweis = ctx_->spielanweisung();
-			if (sanweis) {
-				sanweis->perform(ctx_, events);
-			}
 			meta->expression = tmpExpression;
 			for (const auto &event : events) {
 				if (event.isPitchBend()) {

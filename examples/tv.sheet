@@ -211,7 +211,7 @@ type: sheet;
     /template:  
         x
         drums.country.normal
-        bass.bossanova.normal
+        bass.country.normal
         rhythm.country.normal
     /
     G    | G   | G7 | G6 | G/5 | G |
@@ -274,7 +274,14 @@ type: sheet;
         bass.bossanova.normal
         rhythm.bossanova.normal
     /        
-    G7  | G7 |
+    G7  | G7 | 
+    /template:  
+        drums.country.ende
+        bass.country.ende
+        rhythm.country.ende
+    / 
+    /tempo: normal/
+    G7 |
   
 }
 ]

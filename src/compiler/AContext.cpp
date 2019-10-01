@@ -441,7 +441,7 @@ namespace sheet {
 			auto &wm = fm::getWerckmeister();
 			auto meta = voiceMetaData();
 			auto mod = wm.getModification(name);
-			meta->modifications.push_back(mod);
+			meta->modifications.push_front(mod);
 			mod->setArguments(args);
 		}
 
@@ -450,7 +450,7 @@ namespace sheet {
 			auto &wm = fm::getWerckmeister();
 			auto meta = voiceMetaData();
 			auto mod = wm.getModification(name);
-			meta->modificationsOnce.push_back(mod);
+			meta->modificationsOnce.push_front(mod);
 			mod->setArguments(args);
 		}
 

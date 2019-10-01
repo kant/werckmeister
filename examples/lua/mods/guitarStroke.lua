@@ -6,6 +6,9 @@ local mode = "alternate"
 
 function perform(eventsOrigin, args, timeinfo)
     args = tokeyvalue(args)
+    if #eventsOrigin > 2 then
+        return eventsOrigin
+    end
     local event = eventsOrigin[1]
     local events = { }
     local comparer = pitchCompare
