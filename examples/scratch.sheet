@@ -29,7 +29,7 @@ instrument: drums;
 }
 {
     /do: swing grid 8 offset 100/
-    "ht"8t x  "ht" x  "ht"  x "ht" x  |
+    "ht"8 x  "ht" x  "ht"  x "ht" x  |
     
 }
 {
