@@ -43,11 +43,11 @@ instrumentConf: piano
 
 instrumentConf: lead 
     pan 70
-    volume 90;   
+    volume 0;   
 
 instrumentConf: lead2
     pan 30
-    volume 100;   
+    volume 0;   
 
 instrumentConf: sitar
     pan 40

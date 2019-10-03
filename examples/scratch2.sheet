@@ -15,6 +15,7 @@ instrumentDef: lead    SC1 3 0 0;
 instrumentDef: piano   SC1 4 0 0;
 
 instrumentConf: rhythm
+    voicingStrategy voicelead range bass
     mod guitarStroke
     pan 60
     volume 75;

@@ -16,7 +16,7 @@ instrumentConf: bass   volume 0;
 
 instrumentConf: guitar  
     voicingStrategy simple range bass
-    mod guitarStroke value 16 mode single direction down
+    --mod guitarStroke value 16 mode single direction down
     volume 90
 ;
 
