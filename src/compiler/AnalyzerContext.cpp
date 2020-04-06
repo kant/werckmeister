@@ -5,6 +5,10 @@ namespace sheet {
     namespace compiler {
         void AnalyzerContext::newBar(const Event &newBarEvent)
         {
+            auto voiceMeta = voiceMetaData();
+            int barCount = voiceMeta->barCount;
+            fm::Ticks barlength = voiceMeta->barPosition; // bar position means the actual written ticks per bar
+                                                         // voiceMeta->barLength means the length per definiton
             Base::newBar(newBarEvent);
             if (this->analyzerData == nullptr) {
                 return;
@@ -16,7 +20,9 @@ namespace sheet {
                 return;
             }
             BarEvent barEvent(newBarEvent);
-            barEvent.position = this->currentPosition();
+            barEvent.position = voiceMeta->position;
+            barEvent.barCount = barCount;
+            barEvent.barLength = barlength;
             this->analyzerData->barEvents.push_back(barEvent);
         }
     }

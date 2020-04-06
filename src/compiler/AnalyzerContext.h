@@ -9,6 +9,8 @@ namespace sheet {
         struct BarEvent: public Event {
             BarEvent(const Event &event) : Event(event) {} 
             fm::Ticks position = 0;
+            fm::Ticks barLength = 0;
+            int barCount = -1;
         };
         struct AnalyzerData {
             typedef std::list<BarEvent> BarEvents;

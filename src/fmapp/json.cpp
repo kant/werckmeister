@@ -78,10 +78,14 @@ namespace {
             rapidjson::Value object(rapidjson::kObjectType);
             rapidjson::Value sourceId(barEvent.sourceId);
             rapidjson::Value quarterPosition((double)(barEvent.position / fm::PPQ));
+            rapidjson::Value barCount(barEvent.barCount);
+            rapidjson::Value barLength((double)(barEvent.barLength / fm::PPQ));
             object.AddMember("sourceId", sourceId, json.GetAllocator());
             rapidjson::Value positionBegin(barEvent.sourcePositionBegin);
             object.AddMember("positionBegin", positionBegin, json.GetAllocator());
             object.AddMember("quarterPosition", quarterPosition, json.GetAllocator());
+            object.AddMember("barCount", barCount, json.GetAllocator());
+            object.AddMember("barLength", barLength, json.GetAllocator());
             array.PushBack(object, json.GetAllocator());
         }
         json.AddMember("barEvents", array, json.GetAllocator());
