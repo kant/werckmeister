@@ -41,8 +41,9 @@ struct Settings {
 			(ARG_HELP, "produce help message")
 			(ARG_INPUT, po::value<std::string>(), "input file")
 			(ARG_OUTPUT, po::value<std::string>(), "output file")
-			(ARG_MODE, po::value<std::string>(), "mode: normal | json | validate; in JSON mode the input and output will be implemented using JSON strings. The input JSON has to be Base64 encoded. \
-Validate mode checks for errors and returns the validation result as json object.")
+			(ARG_MODE, po::value<std::string>(), "mode: normal | json | validate | analyze; in JSON mode the input and output will be implemented using JSON strings. The input JSON has to be Base64 encoded. \
+Validate mode checks for errors and returns the validation result as json object.\
+Analyze returns some analyze data as JSON such as bar positions.")
 			(ARG_NOMETA, "dosen't render midi meta events like track name or tempo")
 			(ARG_VERSION, "prints the werckmeister version")
 			;
@@ -90,6 +91,13 @@ Validate mode checks for errors and returns the validation result as json object
 			return false;
 		}
 		return variables[ARG_MODE].as<std::string>() == "validate";
+	}
+
+	bool isAnalyzeMode() const {
+		if (variables.count(ARG_MODE) == 0) {
+			return false;
+		}
+		return variables[ARG_MODE].as<std::string>() == "analyze";
 	}
 
 	bool version() const {
@@ -172,22 +180,24 @@ void toJSONOutput(sheet::DocumentPtr doc, fm::midi::MidiPtr midi, const sheet::W
 
 void toValidationJSONOutput(sheet::DocumentPtr doc, fm::midi::MidiPtr midi, 
 	const sheet::Warnings& warnings,
-	const sheet::compiler::AnalyzerData &analyzerData)
+	const sheet::compiler::AnalyzerData *analyzerData = nullptr)
 {
 	fmapp::JsonWriter jsonWriter;
-	std::cout << jsonWriter.documentInfosToJSON(doc, midi->duration(), warnings, &analyzerData) << std::endl;
+	std::cout << jsonWriter.documentInfosToJSON(doc, midi->duration(), warnings, analyzerData) << std::endl;
 }
 
 
 int main(int argc, const char** argv)
 {
 	bool jsonMode = false, 
-		 vaidateMode = false;
+		 vaidateMode = false,
+		 analyzeMode = false;
 	sheet::compiler::AnalyzerData analyzerData;
 	try {
 		Settings settings(argc, argv);
 		jsonMode = settings.isJsonMode();
 		vaidateMode = settings.isValidateMode();
+		analyzeMode = settings.isAnalyzeMode();
 		std::string infile;
 
 		if (settings.help()) {
@@ -199,7 +209,7 @@ int main(int argc, const char** argv)
 			std:: cout << SHEET_VERSION << std::endl;
 			return 0;
 		}
-		if (vaidateMode) {
+		if (analyzeMode) {
 			auto &wm = fm::getWerckmeister();
 			wm.createContextHandler([&analyzerData](){
 				auto analyzerContext = std::make_shared<sheet::compiler::AnalyzerContext>();
@@ -226,7 +236,7 @@ int main(int argc, const char** argv)
 		auto document = sheet::createDocument(infile);
 		auto midi = sheet::processFile(document, warnings, &midiConfig);
 
-		if (!jsonMode && !vaidateMode) {
+		if (!jsonMode && !vaidateMode && !analyzeMode) {
 			printWarnings(document, warnings);
 		}
 
@@ -238,7 +248,10 @@ int main(int argc, const char** argv)
 			toJSONOutput(document, midi, warnings);
 		} else {
 			if (vaidateMode) {
-				toValidationJSONOutput(document, midi, warnings, analyzerData);
+				toValidationJSONOutput(document, midi, warnings);
+			}
+			if (analyzeMode) {
+				toValidationJSONOutput(document, midi, warnings, &analyzerData);
 			}
 			else {
 				saveMidi(midi, outfile);
