@@ -75,7 +75,7 @@ namespace {
         for(const auto &barEvent : events) {
             rapidjson::Value object(rapidjson::kObjectType);
             rapidjson::Value sourceId(barEvent.sourceId);
-            rapidjson::Value quarterPosition((double)barEvent.position);
+            rapidjson::Value quarterPosition((double)(barEvent.position / fm::PPQ));
             object.AddMember("sourceId", sourceId, json.GetAllocator());
             rapidjson::Value positionBegin(barEvent.sourcePositionBegin);
             object.AddMember("positionBegin", positionBegin, json.GetAllocator());
