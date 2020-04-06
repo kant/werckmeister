@@ -14,6 +14,7 @@
 #include "sheet/Document.h"
 #include "sheet.h"
 #include "fmapp/MidiAndTimeline.hpp"
+#include "compiler/AnalyzerContext.h"
 
 #define ARG_HELP "help"
 #define ARG_INPUT "input"
@@ -169,10 +170,12 @@ void toJSONOutput(sheet::DocumentPtr doc, fm::midi::MidiPtr midi, const sheet::W
 	;
 }
 
-void toValidationJSONOutput(sheet::DocumentPtr doc, fm::midi::MidiPtr midi, const sheet::Warnings& warnings)
+void toValidationJSONOutput(sheet::DocumentPtr doc, fm::midi::MidiPtr midi, 
+	const sheet::Warnings& warnings,
+	const sheet::compiler::AnalyzerData &analyzerData)
 {
 	fmapp::JsonWriter jsonWriter;
-	std::cout << jsonWriter.documentInfosToJSON(doc, midi->duration(), warnings) << std::endl;
+	std::cout << jsonWriter.documentInfosToJSON(doc, midi->duration(), warnings, &analyzerData) << std::endl;
 }
 
 
@@ -180,6 +183,7 @@ int main(int argc, const char** argv)
 {
 	bool jsonMode = false, 
 		 vaidateMode = false;
+	sheet::compiler::AnalyzerData analyzerData;
 	try {
 		Settings settings(argc, argv);
 		jsonMode = settings.isJsonMode();
@@ -195,7 +199,14 @@ int main(int argc, const char** argv)
 			std:: cout << SHEET_VERSION << std::endl;
 			return 0;
 		}
-
+		if (vaidateMode) {
+			auto &wm = fm::getWerckmeister();
+			wm.createContextHandler([&analyzerData](){
+				auto analyzerContext = std::make_shared<sheet::compiler::AnalyzerContext>();
+				analyzerContext->analyzerData = &analyzerData;
+				return analyzerContext;
+			});
+		}
 		if (jsonMode && settings.input()) {
 			auto json = settings.getInput();
 			json = fmapp::base64Decode(json);
@@ -227,7 +238,7 @@ int main(int argc, const char** argv)
 			toJSONOutput(document, midi, warnings);
 		} else {
 			if (vaidateMode) {
-				toValidationJSONOutput(document, midi, warnings);
+				toValidationJSONOutput(document, midi, warnings, analyzerData);
 			}
 			else {
 				saveMidi(midi, outfile);

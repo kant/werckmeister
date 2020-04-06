@@ -16,6 +16,7 @@ SET (SRC_FETZER_LIB
     compiler/documentParser.cpp
     compiler/pitchmapParser.cpp
     compiler/MidiContext.cpp
+    compiler/AnalyzerContext.cpp
     compiler/AContext.cpp
     compiler/preprocessor.cpp
     compiler/sheetEventRenderer.cpp

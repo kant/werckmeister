@@ -18,6 +18,7 @@
 namespace sheet {
     namespace compiler {
         struct TrackMetaData {
+            fm::String type;
             fm::String instrument;
             fm::String uname;
             virtual ~TrackMetaData() = default;

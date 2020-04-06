@@ -72,6 +72,7 @@ namespace sheet {
 					continue;
 				}				
 				auto trackId = ctx->createTrack();
+				ctx->trackMetaData(trackId)->type = SHEET_META__TRACK_META_KEY_TRACK_TYPE_DEFAULT;
 				ctx->setTrack(trackId);
 				ctx->processMeta(track.trackInfos, 
 					[](const auto &x) { return x.name; }, 
@@ -97,6 +98,8 @@ namespace sheet {
 				auto voice = sheetTrack->voices.begin(); 
 				std::list<Event*> barEvents;
 				ctx->setChordTrackTarget();
+				auto trackMetaData = ctx->trackMetaData(ctx->chordTrackId());
+				trackMetaData->type = SHEET_META__TRACK_META_VALUE_TYPE_ACCOMP;
 				auto voiceMetaData = ctx->voiceMetaData();
 				// since we process the chord track a second time, we reset all vital values
 				voiceMetaData->barPosition = 0;

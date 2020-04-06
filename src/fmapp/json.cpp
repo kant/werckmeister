@@ -8,6 +8,7 @@
 #include <boost/beast/core/detail/base64.hpp>
 #include <fm/midi.hpp>
 #include <fmapp/os.hpp>
+#include <compiler/AnalyzerContext.h>
 
 namespace {
     std::string toString(const rapidjson::Document &doc) 
@@ -67,6 +68,23 @@ namespace {
         doc.AddMember("warnings", warningsArray, doc.GetAllocator());
         return doc;
     }
+
+    void addAnalyzerBarEvents(rapidjson::Document &json, sheet::DocumentPtr sheetDoc, const sheet::compiler::AnalyzerData::BarEvents &events)
+    {
+        rapidjson::Value array(rapidjson::kArrayType);
+        for(const auto &barEvent : events) {
+            rapidjson::Value object(rapidjson::kObjectType);
+            rapidjson::Value sourceId(barEvent.sourceId);
+            rapidjson::Value quarterPosition((double)barEvent.position);
+            object.AddMember("sourceId", sourceId, json.GetAllocator());
+            rapidjson::Value positionBegin(barEvent.sourcePositionBegin);
+            object.AddMember("positionBegin", positionBegin, json.GetAllocator());
+            object.AddMember("quarterPosition", quarterPosition, json.GetAllocator());
+            array.PushBack(object, json.GetAllocator());
+        }
+        json.AddMember("barEvents", array, json.GetAllocator());
+    }
+
 }
 
 
@@ -137,9 +155,15 @@ namespace fmapp {
         return toString(doc);
     }
 
-    std::string JsonWriter::documentInfosToJSON(sheet::DocumentPtr document, fm::Ticks duration, const sheet::Warnings &warnings)
+    std::string JsonWriter::documentInfosToJSON(sheet::DocumentPtr document, 
+        fm::Ticks duration, 
+        const sheet::Warnings &warnings, 
+        const sheet::compiler::AnalyzerData* analyzerData)
     {
         rapidjson::Document json = documentInfosToJSONDoc(document, duration, warnings);
+        if (analyzerData != nullptr) {
+            addAnalyzerBarEvents(json, document, analyzerData->barEvents);
+        }
         return toString(json);
     }
 
