@@ -40,6 +40,7 @@ namespace {
         rapidjson::Value array(rapidjson::kArrayType);
         rapidjson::Value warningsArray(rapidjson::kArrayType);
         rapidjson::Value durationValue((double)duration);
+        rapidjson::Value durationInQuartersValue((double)(duration / fm::PPQ));
         for (const auto &source : sheetDoc->sources.left) {
             rapidjson::Value object(rapidjson::kObjectType);
             rapidjson::Value sourceId(source.first);
@@ -65,6 +66,7 @@ namespace {
         }
         doc.AddMember("sources", array, doc.GetAllocator());
         doc.AddMember("duration", durationValue, doc.GetAllocator());
+        doc.AddMember("durationInQuarters", durationInQuartersValue, doc.GetAllocator());
         doc.AddMember("warnings", warningsArray, doc.GetAllocator());
         return doc;
     }
