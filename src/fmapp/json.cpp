@@ -91,6 +91,24 @@ namespace {
         json.AddMember("barEvents", array, json.GetAllocator());
     }
 
+    void addAnalyzerEvents(rapidjson::Document &json, sheet::DocumentPtr sheetDoc, const sheet::compiler::AnalyzerData::AnalyzerEvents &events)
+    {
+        rapidjson::Value array(rapidjson::kArrayType);
+        for(const auto &analyzerEvent : events) {
+            rapidjson::Value object(rapidjson::kObjectType);
+            rapidjson::Value sourceId(analyzerEvent.sourceId);
+            rapidjson::Value quarterPosition((double)(analyzerEvent.position / fm::PPQ));
+            rapidjson::Value duration((double)(analyzerEvent.duration / fm::PPQ));
+            object.AddMember("sourceId", sourceId, json.GetAllocator());
+            rapidjson::Value positionBegin(analyzerEvent.sourcePositionBegin);
+            object.AddMember("positionBegin", positionBegin, json.GetAllocator());
+            object.AddMember("quarterPosition", quarterPosition, json.GetAllocator());
+            object.AddMember("duration", duration, json.GetAllocator());
+            array.PushBack(object, json.GetAllocator());
+        }
+        json.AddMember("analyzerEvents", array, json.GetAllocator());
+    }
+
 }
 
 
@@ -169,6 +187,7 @@ namespace fmapp {
         rapidjson::Document json = documentInfosToJSONDoc(document, duration, warnings);
         if (analyzerData != nullptr) {
             addAnalyzerBarEvents(json, document, analyzerData->barEvents);
+            addAnalyzerEvents(json, document, analyzerData->analyzerEvents);
         }
         return toString(json);
     }
