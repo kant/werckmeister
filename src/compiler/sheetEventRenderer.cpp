@@ -17,8 +17,6 @@ namespace sheet {
 			bool renderEvent<Event::Note>(SheetEventRenderer* renderer, const Event *ev)
 			{
 				renderer->__renderEvent__(*ev);
-				auto ctx = renderer->context();
-				ctx->setNote(*ev);
 				return true;
 			}
 
@@ -38,8 +36,6 @@ namespace sheet {
 			bool renderEvent<Event::TiedNote>(SheetEventRenderer* renderer, const Event *ev)
 			{
 				renderer->__renderEvent__(*ev);
-				auto ctx = renderer->context();
-				ctx->setNote(*ev);
 				return true;
 			}
 
@@ -71,7 +67,6 @@ namespace sheet {
 			{
 				auto ctx = renderer->context();
 				ctx->seek(chordEv->duration);
-				ctx->setChord(*chordEv);
 				return true;
 			}
 			template<>
@@ -130,6 +125,7 @@ namespace sheet {
 			auto meta = ctx_->voiceMetaData();
 			++(meta->eventCount);
 			try {
+				ctx_->setEvent(ev);
 				_addEvent(this, &ev);
 			} catch(fm::Exception &ex) {
 				ex << ex_sheet_source_info(ev);

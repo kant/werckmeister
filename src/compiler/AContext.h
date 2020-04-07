@@ -167,8 +167,7 @@ namespace sheet {
 			 */ 
 			virtual void seek(fm::Ticks duration);
 			virtual void newBar(const Event &newBarEvent);
-			virtual void setChord(const Event &chordEvent) {}
-			virtual void setNote(const Event &noteEvent) {}
+			virtual void setEvent(const Event &chordEvent) {}
 			virtual void rest(fm::Ticks duration);
 			virtual fm::Ticks barPos() const;
 			/**

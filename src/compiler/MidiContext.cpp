@@ -107,7 +107,7 @@ namespace sheet {
 				FM_THROW(Exception, "failed to add an event without related track");
 			}
 			auto voiceConfig = voiceMetaData<MidiContext::VoiceMetaData>();
-			if (voiceConfig) // && voiceConfig->tempoFactor != 1) 
+			if (voiceConfig)
 			{
 				auto evCopy = ev;
 				evCopy.absPosition(evCopy.absPosition() * voiceConfig->tempoFactor + voiceConfig->positionOffset);

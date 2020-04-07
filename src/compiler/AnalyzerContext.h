@@ -27,8 +27,9 @@ namespace sheet {
             typedef MidiContext Base;
             AnalyzerData *analyzerData = nullptr;
             virtual void newBar(const Event &newBarEvent) override;
-            virtual void setChord(const Event &chordEvent) override;
-            virtual void setNote(const Event &noteEvent) override;
+            virtual void setEvent(const Event &event) override;
+            virtual void metaSetTempo(double bpm) override {}
+            virtual void addEvent(const fm::midi::Event &ev, TrackId trackId) override {}
         protected:
             bool isCurrentTrackRelevant() const;
         };

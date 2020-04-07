@@ -30,35 +30,22 @@ namespace sheet {
             this->analyzerData->barEvents.emplace_back(barEvent);
         }
 
-        void AnalyzerContext::setChord(const Event &chordEvent) 
+        void AnalyzerContext::setEvent(const Event &event) 
         {
+            Base::setEvent(event);
+            if (!event.isTimeConsuming()) {
+                return;
+            }
             auto voiceMeta = voiceMetaData();
             auto position = voiceMeta->position;
-            Base::setChord(chordEvent);
             if (!this->isCurrentTrackRelevant()) {
                 return;
             }
             if (this->analyzerData == nullptr) {
                 return;
             }
-            AnalyzerEvent analyzerEvent(chordEvent);
-            analyzerEvent.position = position;
-            this->analyzerData->analyzerEvents.emplace_back(analyzerEvent);
-        }
-        void AnalyzerContext::setNote(const Event &noteEvent) 
-        {
-            auto voiceMeta = voiceMetaData();
-            auto position = voiceMeta->position;
-            Base::setNote(noteEvent);
-            if (!this->isCurrentTrackRelevant()) {
-                return;
-            }
-            if (this->analyzerData == nullptr) {
-                return;
-            }
-            AnalyzerEvent analyzerEvent(noteEvent);
-            analyzerEvent.position = position;
-            analyzerEvent.duration = noteEvent.duration;
+            AnalyzerEvent analyzerEvent(event);
+            analyzerEvent.position = position * voiceMeta->tempoFactor;
             this->analyzerData->analyzerEvents.emplace_back(analyzerEvent);
         }
     }
