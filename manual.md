@@ -127,7 +127,7 @@ Getting Started
 ## Download & Installation
 Have a look [here](https://werckme.github.io/getwerckmeister).
 
-Find the download and follow the installtion instructions regarding to your OS.
+Find the download and follow the installation instructions regarding to your OS.
 
 
 ## Installation is done, what now?
