@@ -490,6 +490,10 @@ namespace fm {
 				written += numBytes;
 				bff += numBytes;
 			}
+			auto eot = Event();
+			eot.metaData(EndOfTrack, nullptr, 0);
+			eot.absPosition(offset);
+			written += eot.write(offset, bff, maxByteSize - written);
 			return written;
 		}
 		void EventContainer::addNote(Channel channel, Ticks absPosition, Pitch pitch, Velocity velocity, Ticks length)
@@ -505,7 +509,10 @@ namespace fm {
 				result += ev.byteSize(offset);
 				offset = ev.absPosition();
 			}
-			return result;
+			auto eot = Event();
+			eot.metaData(EndOfTrack, nullptr, 0);
+			eot.absPosition(offset);
+			return result + eot.byteSize(offset);
 		}
 		bool EventContainer::contains(const Event &event) const
 		{
@@ -531,21 +538,15 @@ namespace fm {
 				FM_THROW(fm::Exception, "buffer to small");
 			}
 			Header header;
-			auto eot = Event();
-			Byte eotBytes[] = {0};
-			eot.metaData(EndOfTrack, &eotBytes[0], 1);
 
-			header.chunkSize = static_cast<DWord>(events().byteSize() + eot.byteSize(0));
+			header.chunkSize = static_cast<DWord>(events().byteSize());
 			if (isLittleEndian()) {
 				endswap(&header.chunkSize);
 			}
 			::memcpy(bff, &header, HeaderSize);
 			bff += HeaderSize;
 			wrote += HeaderSize;
-			auto eventBytesWritten = events().write(bff, maxByteSize - wrote);
-			wrote += eventBytesWritten;
-			bff += eventBytesWritten;
-			wrote += eot.write(0, bff, maxByteSize - wrote);
+			wrote += events().write(bff, maxByteSize - wrote);
 			return wrote;
 		}
 		void Track::setMetaData(const MetaKey &key, const MetaValue &val)

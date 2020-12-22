@@ -201,12 +201,12 @@ namespace fm {
 			static const MetaKey MetaKeyRelatedVertexId;
 			static const MetaKey MetaKeyRelatedSheetId;
 			static const MetaKey MetaKeyMidiChannel;
-			enum { HeaderSize = 8, EoTSize = 5 };
+			enum { HeaderSize = 8 };
 			const EventContainer & events() const { return _container; }
 			EventContainer & events() { return _container; }
 			size_t read(const Byte *, size_t length);
 			size_t write(Byte *, size_t maxByteSize) const;
-			size_t byteSize() const { return _container.byteSize() + sizeof(Header) + EoTSize; }
+			size_t byteSize() const { return _container.byteSize() + sizeof(Header); }
 			/**
 				values will not be written to midi file
 			*/
