@@ -83,7 +83,11 @@ namespace sheet {
                 lua_pushnumber(L, count++);
                 lua_createtable(L, event->pitches.size(), 0);
                 auto objecttop = lua_gettop(L);
-                auto resolved = ctx->definitionsServer()->resolvePitch(pitch);
+                sheet::PitchDef resolved;
+                bool couldResolve = ctx->definitionsServer()->tryResolvePitch(pitch, resolved);
+                if (!couldResolve) {
+                    resolved = pitch;
+                }
                 // pitch
                 lua_pushstring(L, LUA_EVENT_PITCH_PROPETRY_PITCH);
                 lua_pushnumber(L, resolved.pitch);
@@ -164,8 +168,11 @@ namespace sheet {
                 sheet::lua::getTableValue(L, LUA_EVENT_PITCH_PROPETRY_PITCH, pitch);
                 int octave = 0;
                 sheet::lua::getTableValue(L, LUA_EVENT_PITCH_PROPETRY_OCTAVE, octave);
+                fm::String alias;
+                sheet::lua::getTableValue(L, LUA_EVENT_PITCH_PROPETRY_ALIAS, alias);
                 lua_pop(L, 1);
                 sheet::PitchDef pitchDef;
+                pitchDef.alias = alias;
                 pitchDef.pitch = pitch;
                 pitchDef.octave = octave;
                 event.pitches.emplace_back(pitchDef);

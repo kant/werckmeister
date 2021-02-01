@@ -85,6 +85,20 @@ namespace fm {
 		return *result;
 	}
 
+	bool DefinitionsServer::tryResolvePitch(const sheet::PitchDef& pitch, sheet::PitchDef& out)
+	{
+		if (pitch.alias.empty()) {
+			out = pitch;
+			return true;
+		}
+		const sheet::PitchDef* result = getAlias(pitch.alias);
+		if (result == nullptr) {
+			return false;
+		}
+		out = *result;
+		return true;
+	}
+
 	void DefinitionsServer::prepareTemplateDefinitions()
 	{
 		sheetTemplates_ = std::make_unique<SheetTemplates>();

@@ -1,0 +1,15 @@
+using "./chords/default.chords";
+using "./pitchmaps/defaultMIDI.pitchmap";
+using "./lua/mods/drumSequencer.lua";
+
+device: _setName=MyDevice          _isType=fluidSynth       _useFont="E:\Users\samba\Soundfonts\FluidR3_GM.sf2";
+instrumentDef: _setName=piano _onDevice=MyDevice _ch=9 _pc=0;
+tempo: 120;
+
+[
+instrument: piano;
+{
+    /mod: drumSequencer _o="bd,50" _O="bd,100"/
+    "O.o.o.o."1
+}
+]

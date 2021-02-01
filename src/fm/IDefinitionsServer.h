@@ -22,6 +22,7 @@ namespace fm {
 		 * resolve pitches alias if exists
 		 */		
 		virtual sheet::PitchDef resolvePitch(const sheet::PitchDef &pitch) = 0;
+		virtual bool tryResolvePitch(const sheet::PitchDef& pitch, sheet::PitchDef& out) = 0;
 		virtual fm::String defaultSheetTemplateName() const = 0;
     };
 	typedef std::shared_ptr<IDefinitionsServer> IDefinitionsServerPtr;

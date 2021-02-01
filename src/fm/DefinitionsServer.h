@@ -26,6 +26,7 @@ namespace fm {
 		virtual ConstChordValueType getChord(const fm::String &name);
 		virtual ConstPitchDefValueType getAlias(fm::String alias);
 		virtual sheet::PitchDef resolvePitch(const sheet::PitchDef &pitch);
+		virtual bool tryResolvePitch(const sheet::PitchDef& pitch, sheet::PitchDef& out);
 		virtual fm::String defaultSheetTemplateName() const { return "?"; }
 	protected:
 		SheetTemplates & sheetTemplates();
